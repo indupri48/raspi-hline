@@ -24,6 +24,11 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+rt_img/
+rt_csv/
+rtdb.db
+
 MANIFEST
 
 # PyInstaller

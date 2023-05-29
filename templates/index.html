@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+	
+		<title>Radio Telescope</title>
+	
+		<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+		
+	</head>
+	
+	<body>
+	
+		<h1>Radio Telescope</h1>
+
+		<p id="status">Telescope status: Unknown</p>
+
+		<script>
+
+		getStatus();
+
+		function getStatus() {
+
+			const xhttp = new XMLHttpRequest();
+			xhttp.onload = function() {
+				document.getElementById("status").innerHTML = this.responseText;
+			}
+
+			xhttp.open("GET", "status.txt");
+			xhttp.send();
+
+		}
+
+		setInterval(getStatus, 2000);
+
+		</script>
+	
+		<h2>Request an Observation</h2>
+	
+		<form action="/submit_request" method="POST">
+			
+			<label for="observation_name">Observation Name:</label>
+			<input type="text" id="observation_name" name="observation_name"><br><br>
+			
+			<label for="center_frequency">Center Frequency (MHz):</label>
+			<input type="text" id="center_frequency" name="center_frequency" value=1420><br><br>
+			
+			<label for="bandwidth">Bandwidth (MHz):</label>
+			<input type="text" id="bandwidth" name="bandwidth" value=2.4><br><br>
+			
+			<label for="n_channels">Number of Channels:</label>
+			<input type="text" id="n_channels" name="n_channels" value=2048 readonly><br><br>
+			
+			<label for="n_bins">Number of Bins:</label>
+			<input type="text" id="n_bins" name="n_bins" value=2048 readonly><br><br>
+			
+			<label for="duration">Duration (s):</label>
+			<input type="text" id="duration" name="duration"><br><br>
+						
+			<input type="submit" value="Submit">
+			
+		</form>
+	
+		<h2>Previous Observations</h2>
+
+		<table border=1>
+
+			<tr><th>Observation Name</th><th>Center Frequency (MHz)</th><th>Bandwidth (MHz)</th><th>Number of Channels</th><th>Number of Bins</th><th>Duration (s)</th><th>Date Observed</th><th>CSV File</th><th>Image File</th><th>Delete</th></tr>
+
+			{% for observation in observations %}
+
+				<tr>
+					<td>{{ observation['observation_name'] }}</td>
+					<td>{{ observation['center_frequency'] }}</td>
+					<td>{{ observation['bandwidth'] }}</td>
+					<td>{{ observation['n_channels'] }}</td>
+					<td>{{ observation['n_bins'] }}</td>
+					<td>{{ observation['duration'] }}</td>
+					<td>{{ observation['date_created'] }}</td>
+					
+					<td>
+						<a href="rt_csv/{{ observation['csv_filename'] }}">Download CSV</a>
+					</td>
+					
+					<td>
+						<a href="rt_img/{{ observation['img_filename'] }}">View Data Plots</a>
+					</td>
+					
+					<td>
+						<a href="/delete_observation?observation_id={{ observation['id'] }}">Delete</a>
+					</td>
+					
+				</tr>
+
+			{% endfor %}
+
+		</table>
+		
+		<h2>Update QTH</h2>
+	
+		<form action="/update_qth" method="POST">
+			
+			<label for="lat">Telescope Latitude (-90, 90):</label>
+			<input type="text" id="lat" name="lat" value={{ lat }}><br><br>
+			
+			<label for="lon">Telescope Longitude (-180, 180):</label>
+			<input type="text" id="lon" name="lon" value={{ lon }}><br><br>
+					
+			<input type="submit" value="Update">
+			
+		</form>
+	
+	</body>
+
+<//html>
